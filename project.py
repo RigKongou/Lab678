@@ -17,16 +17,19 @@ def load_json(file_path):
         print(f"Error reading JSON file: {e}")
         return None
 
+def save_json(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+        print(f"Data successfully saved to {file_path}")
+    except Exception as e:
+        print(f"Error writing JSON file: {e}")
+
 if __name__ == "__main__":
     input_file, output_file = parse_arguments()
     if input_file.endswith('.json'):
         data = load_json(input_file)
         if data:
             print("JSON data loaded successfully")
-        else:
-            print("Failed to load JSON data")
-
-if __name__ == "__main__":
-    input_file, output_file = parse_arguments()
-    print(f"Input File: {input_file}")
-    print(f"Output File: {output_file}")
+            if output_file.endswith('.json'):
+                save_json(data, output_file)
