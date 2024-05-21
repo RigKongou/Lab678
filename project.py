@@ -35,15 +35,25 @@ def load_yaml(file_path):
         print(f"Error reading YAML file: {e}")
         return None
 
+def save_yaml(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            yaml.safe_dump(data, file)
+        print(f"Data successfully saved to {file_path}")
+    except Exception as e:
+        print(f"Error writing YAML file: {e}")
+
 if __name__ == "__main__":
-  input_file, output_file = parse_arguments()
-  if input_file.endswith('.json'):
-      data = load_json(input_file)
-      if data:
-          print("JSON data loaded successfully")
-          if output_file.endswith('.json'):
-              save_json(data, output_file)
-  elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
-      data = load_yaml(input_file)
-      if data:
-          print("YAML data loaded successfully")
+    input_file, output_file = parse_arguments()
+    if input_file.endswith('.json'):
+        data = load_json(input_file)
+        if data:
+            print("JSON data loaded successfully")
+            if output_file.endswith('.json'):
+                save_json(data, output_file)
+    elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
+        data = load_yaml(input_file)
+        if data:
+            print("YAML data loaded successfully")
+            if output_file.endswith('.yml') or output_file.endswith('.yaml'):
+                save_yaml(data, output_file)
