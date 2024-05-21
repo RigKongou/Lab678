@@ -25,8 +25,3 @@ if __name__ == "__main__":
             print("JSON data loaded successfully")
         else:
             print("Failed to load JSON data")
-
-if __name__ == "__main__":
-    input_file, output_file = parse_arguments()
-    print(f"Input File: {input_file}")
-    print(f"Output File: {output_file}")
