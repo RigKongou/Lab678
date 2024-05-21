@@ -4,7 +4,7 @@ import yaml
 import xmltodict
 from PyQt5 import QtWidgets
 import sys
-
+import concurrent.futures
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Data conversion program')
@@ -115,6 +115,41 @@ class ConverterApp(QtWidgets.QWidget):
                 save_xml(data, output_file)
             else:
                 print("Unsupported output file format")
+
+class ConverterApp(QtWidgets.QWidget):
+
+    def convert_files(self):
+        input_file = self.input_path.text()
+        output_file = self.output_path.text()
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(self.convert, input_file, output_file)
+            future.add_done_callback(self.show_result)
+
+    def convert(self, input_file, output_file):
+        if input_file.endswith('.json'):
+            data = load_json(input_file)
+        elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
+            data = load_yaml(input_file)
+        elif input_file.endswith('.xml'):
+            data = load_xml(input_file)
+        else:
+            return "Unsupported input file format"
+
+        if data:
+            if output_file.endswith('.json'):
+                save_json(data, output_file)
+            elif output_file.endswith('.yml') or output_file.endswith('.yaml'):
+                save_yaml(data, output_file)
+            elif output_file.endswith('.xml'):
+                save_xml(data, output_file)
+            else:
+                return "Unsupported output file format"
+        return "Conversion completed"
+
+    def show_result(self, future):
+        result = future.result()
+        print(result)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
