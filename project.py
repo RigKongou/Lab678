@@ -2,6 +2,9 @@ import argparse
 import json
 import yaml
 import xmltodict
+from PyQt5 import QtWidgets
+import sys
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Data conversion program')
@@ -62,23 +65,58 @@ def save_xml(data, file_path):
     except Exception as e:
         print(f"Error writing XML file: {e}")
 
-if __name__ == "__main__":
-    input_file, output_file = parse_arguments()
-    if input_file.endswith('.json'):
-        data = load_json(input_file)
+class ConverterApp(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.input_label = QtWidgets.QLabel('Input File', self)
+        self.input_label.move(20, 20)
+
+        self.input_path = QtWidgets.QLineEdit(self)
+        self.input_path.move(20, 40)
+        self.input_path.resize(280, 20)
+
+        self.output_label = QtWidgets.QLabel('Output File', self)
+        self.output_label.move(20, 80)
+
+        self.output_path = QtWidgets.QLineEdit(self)
+        self.output_path.move(20, 100)
+        self.output_path.resize(280, 20)
+
+        self.convert_button = QtWidgets.QPushButton('Convert', self)
+        self.convert_button.move(20, 140)
+        self.convert_button.clicked.connect(self.convert_files)
+
+        self.setGeometry(300, 300, 320, 200)
+        self.setWindowTitle('File Converter')
+        self.show()
+
+    def convert_files(self):
+        input_file = self.input_path.text()
+        output_file = self.output_path.text()
+        if input_file.endswith('.json'):
+            data = load_json(input_file)
+        elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
+            data = load_yaml(input_file)
+        elif input_file.endswith('.xml'):
+            data = load_xml(input_file)
+        else:
+            print("Unsupported input file format")
+            return
+
         if data:
-            print("JSON data loaded successfully")
             if output_file.endswith('.json'):
                 save_json(data, output_file)
-    elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
-        data = load_yaml(input_file)
-        if data:
-            print("YAML data loaded successfully")
-            if output_file.endswith('.yml') or output_file.endswith('.yaml'):
+            elif output_file.endswith('.yml') or output_file.endswith('.yaml'):
                 save_yaml(data, output_file)
-    elif input_file.endswith('.xml'):
-        data = load_xml(input_file)
-        if data:
-            print("XML data loaded successfully")
-            if output_file.endswith('.xml'):
+            elif output_file.endswith('.xml'):
                 save_xml(data, output_file)
+            else:
+                print("Unsupported output file format")
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    ex = ConverterApp()
+    sys.exit(app.exec_())
