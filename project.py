@@ -1,5 +1,6 @@
 import argparse
 import json
+import yaml
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Data conversion program')
@@ -25,11 +26,24 @@ def save_json(data, file_path):
     except Exception as e:
         print(f"Error writing JSON file: {e}")
 
+def load_yaml(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            data = yaml.safe_load(file)
+        return data
+    except yaml.YAMLError as e:
+        print(f"Error reading YAML file: {e}")
+        return None
+
 if __name__ == "__main__":
-    input_file, output_file = parse_arguments()
-    if input_file.endswith('.json'):
-        data = load_json(input_file)
-        if data:
-            print("JSON data loaded successfully")
-            if output_file.endswith('.json'):
-                save_json(data, output_file)
+  input_file, output_file = parse_arguments()
+  if input_file.endswith('.json'):
+      data = load_json(input_file)
+      if data:
+          print("JSON data loaded successfully")
+          if output_file.endswith('.json'):
+              save_json(data, output_file)
+  elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
+      data = load_yaml(input_file)
+      if data:
+          print("YAML data loaded successfully")
